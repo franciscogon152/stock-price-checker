@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(helmet());
 
-// app.enable('trust proxy');
+// app.enable('trust proxy'); // Not enabled for privacy reasons
 
 //Index page (static HTML)
 app.route('/')
