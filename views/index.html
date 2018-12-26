@@ -56,7 +56,7 @@
 							<div class="row">
 								<div class="col">
 									<h3>Get single price and total likes</h3>
-									<form id="testForm2" class="form-inline">
+									<form id="testForm" class="form-inline">
 										<div class="form-group mb-0">
 											<input class="form-control mr-2" type="text" name="stock" placeholder="goog" required>
 											<div class="custom-control custom-checkbox mr-2">
@@ -69,7 +69,7 @@
 								</div>
 								<div class="col">
 									<h3>Compare and get relative likes</h3>
-									<form id="testForm" class="form-inline">
+									<form id="testForm2" class="form-inline">
 										<div class="form-group mb-0">
 											<input class="form-control mr-2" type="text" name="stock" placeholder="goog" required>
 											<input class="form-control mr-2" type="text" name="stock" placeholder="msft" required>
@@ -101,23 +101,12 @@
 
 	<script>
 	$(function() {
-		$('#testForm').submit(function(e) {
+		$('#testForm, #testForm2').submit(function(e) {
 			e.preventDefault();
 			$.ajax({
 				url: '/api/stock-prices',
 				type: 'get',
-				data: $('#testForm').serialize(),
-				success: function(data) {
-					$('#jsonResult').text(JSON.stringify(data));
-				}
-			});
-		});
-		$('#testForm2').submit(function(e) {
-			e.preventDefault();
-			$.ajax({
-				url: '/api/stock-prices',
-				type: 'get',
-				data: $('#testForm2').serialize(),
+				data: $(this).serialize(),
 				success: function(data) {
 					$('#jsonResult').text(JSON.stringify(data));
 				}
