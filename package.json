@@ -1,7 +1,7 @@
 {
-	"name": "my-hyperdev-app",
-	"version": "0.0.1",
-	"description": "What am I about?",
+	"name": "Stock Price Checker",
+	"version": "1.0.0",
+	"description": "freeCodeCamp - Information Security and Quality Assurance Project: Stock Price Checker",
 	"author": "Adam",
 	"main": "server.js",
 	"scripts": {
@@ -25,11 +25,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://hyperdev.com/#!/project/welcome-project"
+		"url": "https://github.com/Adam111/freecodecamp-project-stock-checker"
 	},
 	"keywords": [
+		"glitch",
 		"node",
-		"hyperdev",
 		"express",
 		"freecodecamp"
 	],
