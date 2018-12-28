@@ -15,7 +15,7 @@ var request = require('request');
 module.exports = function(app) {
 
   app.route('/api/stock-prices').get(function(req, res) {
-    if (req.query.stock === undefined) {
+    if (req.query.stock === undefined || req.query.stock === '') {
       return res.json({ error: 'stock is required' });
     }
     
