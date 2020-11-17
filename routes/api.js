@@ -59,7 +59,7 @@ module.exports = function(app) {
           function(error, result) {
             let likes = (result.value.likes !== undefined ? result.value.likes.length : 0);
             
-            request('https://api.iextrading.com/1.0/stock/'+stock[0]+'/price', function(error, response, body) {
+            request('https://cloud.iexapis.com/stable/stock/'+stock[0].toLowerCase()+'/quote/latestPrice?token='+process.env.STOCK_API_TOKEN, function(error, response, body) {
               if (stock[1] === undefined) {
                 return res.json({ stockData: { stock: stock[0], price: body, likes: likes } });
               } else {
@@ -90,7 +90,7 @@ module.exports = function(app) {
                   function(error, result2) {
                     likes = (result2.value.likes !== undefined ? result2.value.likes.length : 0);
 
-                    request('https://api.iextrading.com/1.0/stock/'+stock[1]+'/price', function(error, response, body2) {
+                    request('https://cloud.iexapis.com/stable/stock/'+stock[1].toLowerCase()+'/quote/latestPrice?token='+process.env.STOCK_API_TOKEN, function(error, response, body2) {
                       stock_result.push({ stock: stock[1], price: body2, rel_likes: likes });
                       
                       let rel_likes1 = stock_result[0]['rel_likes'] - stock_result[1]['rel_likes'];
