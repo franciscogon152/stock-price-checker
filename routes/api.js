@@ -30,7 +30,7 @@ module.exports = function(app) {
       stock = [stock];
     }
     
-    MongoClient.connect(process.env.DATABASE, { useNewUrlParser: true }, function(err, db) {
+    MongoClient.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
       if (err) {
         // console.log('Database error: ' + err);
         return res.json({ error: 'error' });
