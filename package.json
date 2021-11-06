@@ -3,10 +3,17 @@
   "description": "freeCodeCamp - Information Security and Quality Assurance Project: Stock Price Checker",
   "version": "1.0.0",
   "author": "Adam",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
+  "keywords": [
+    "glitch",
+    "node",
+    "express",
+    "freecodecamp"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Adam777Z/freecodecamp-project-stock-checker.git"
   },
+  "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "cors": "^2.8.5",
@@ -19,18 +26,11 @@
     "helmet": "^3.15.0",
     "request": "^2.88.2"
   },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "engines": {
     "node": "10.14.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Adam777Z/freecodecamp-project-stock-checker.git"
-  },
-  "keywords": [
-    "glitch",
-    "node",
-    "express",
-    "freecodecamp"
-  ],
-  "license": "MIT"
+  }
 }
