@@ -9,8 +9,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="/public/bootstrap.min.css">
 	<link rel="stylesheet" href="/public/style.css">
-	<!-- Your web app is https, so your scripts need to be too -->
-	<script src="/public/jquery-3.3.1.min.js"></script>
 </head>
 <body>
 	<div class="container">
@@ -56,24 +54,24 @@
 							<div class="col">
 								<h3>Get single price and total likes</h3>
 								<form class="testForm d-flex align-items-center">
-									<input class="form-control me-2" type="text" name="stock" placeholder="goog" required>
+									<input type="text" class="form-control me-2" name="stock" placeholder="goog" required>
 									<div class="form-check me-2">
 										<input type="checkbox" name="like" id="likeCheckbox" class="form-check-input" value="true">
 										<label for="likeCheckbox" class="form-check-label">Like</label>
 									</div>
-									<button class="btn btn-primary" type="submit">Get Price</button>
+									<button type="submit" class="btn btn-primary">Get Price</button>
 								</form>
 							</div>
 							<div class="col">
 								<h3>Compare and get relative likes</h3>
 								<form class="testForm d-flex align-items-center">
-									<input class="form-control me-2" type="text" name="stock" placeholder="goog" required>
-									<input class="form-control me-2" type="text" name="stock" placeholder="msft" required>
+									<input type="text" class="form-control me-2" name="stock" placeholder="goog" required>
+									<input type="text" class="form-control me-2" name="stock" placeholder="msft" required>
 									<div class="form-check me-2">
 										<input type="checkbox" name="like" id="likeBothCheckbox" class="form-check-input" value="true">
 										<label for="likeBothCheckbox" class="form-check-label">Like both</label>
 									</div>
-									<button class="btn btn-primary" type="submit">Get Price</button>
+									<button type="submit" class="btn btn-primary">Get Price</button>
 								</form>
 							</div>
 						</div>
@@ -92,16 +90,27 @@
 	</div>
 
 	<script>
-	$(function() {
-		$('.testForm').submit(function(e) {
-			e.preventDefault();
-			$.ajax({
-				url: '/api/stock-prices',
-				type: 'get',
-				data: $(this).serialize(),
-				success: function(data) {
-					$('#jsonResult').text(JSON.stringify(data));
-				}
+	document.addEventListener('DOMContentLoaded', (event) => {
+		document.querySelectorAll('.testForm').forEach((e) => {
+			e.addEventListener('submit', (event2) => {
+				event2.preventDefault();
+
+				fetch('/api/stock-prices?' + new URLSearchParams(new FormData(event2.target)).toString(), {
+					'method': 'GET'
+				})
+				.then((response) => {
+					if (response['ok']) {
+						return response.json();
+					} else {
+						throw 'Error';
+					}
+				})
+				.then((data) => {
+					document.querySelector('#jsonResult').textContent = JSON.stringify(data);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
 			});
 		});
 	});
