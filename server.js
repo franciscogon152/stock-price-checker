@@ -29,7 +29,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // }));
 
 app.use(helmet({
-	contentSecurityPolicy: false
+	contentSecurityPolicy: false,
+	frameguard: false
 }));
 
 // app.enable('trust proxy'); // Not enabled for privacy reasons
