@@ -60,12 +60,16 @@ module.exports = function (app) {
 						function (error, result) {
 							let likes = (result.value.likes !== undefined ? result.value.likes.length : 0);
 
-							request('https://cloud.iexapis.com/stable/stock/' + stock[0].toLowerCase() + '/quote/latestPrice?token=' + process.env.STOCK_API_TOKEN, function (error, response, body) {
+							request('https://www.alphavantage.co/query?function=global_quote&symbol=' + stock[0].toLowerCase() + '&apikey=' + process.env.STOCK_API_TOKEN, function (error, response, body) {
+								body = JSON.parse(body);
+
 								if (stock[1] === undefined) {
-									return res.json({ stockData: { stock: stock[0], price: Number.parseFloat(body), likes: likes } });
+									// 1 stock
+									return res.json({ stockData: { stock: stock[0], price: Number.parseFloat(body['Global Quote']['05. price']), likes: likes } });
 								} else {
+									// 2 stocks
 									let stock_result = [];
-									stock_result.push({ stock: stock[0], price: Number.parseFloat(body), rel_likes: likes });
+									stock_result.push({ stock: stock[0], price: Number.parseFloat(body['Global Quote']['05. price']), rel_likes: likes });
 
 									stock[1] = stock[1].toUpperCase();
 
@@ -91,8 +95,10 @@ module.exports = function (app) {
 										function (error, result2) {
 											likes = (result2.value.likes !== undefined ? result2.value.likes.length : 0);
 
-											request('https://cloud.iexapis.com/stable/stock/' + stock[1].toLowerCase() + '/quote/latestPrice?token=' + process.env.STOCK_API_TOKEN, function (error, response, body2) {
-												stock_result.push({ stock: stock[1], price: Number.parseFloat(body2), rel_likes: likes });
+											request('https://www.alphavantage.co/query?function=global_quote&symbol=' + stock[1].toLowerCase() + '&apikey=' + process.env.STOCK_API_TOKEN, function (error, response, body2) {
+												body2 = JSON.parse(body2);
+
+												stock_result.push({ stock: stock[1], price: Number.parseFloat(body2['Global Quote']['05. price']), rel_likes: likes });
 
 												let rel_likes1 = stock_result[0]['rel_likes'] - stock_result[1]['rel_likes'];
 												let rel_likes2 = stock_result[1]['rel_likes'] - stock_result[0]['rel_likes'];

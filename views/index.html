@@ -22,12 +22,12 @@
 					<div id="userstories">
 						<h3>User Stories:</h3>
 						<ol>
-							<li>Set the content security policies to only allow loading of scripts and css from your server. (this was ignored to allow scripts so the forms below work)</li>
+							<li>Set the content security policies to only allow loading of scripts and CSS from your server. (this was ignored to allow scripts so the forms below work)</li>
 							<li>I can <b>GET</b> <code>/api/stock-prices</code> with form data containing a Nasdaq <i>stock</i> ticker and recieve back an object <i>stockData</i>.</li>
 							<li>In <i>stockData</i>, I can see the <i>stock</i> (string, the ticker), <i>price</i> (decimal in string format), and <i>likes</i> (int).</li>
 							<li>I can also pass along field <i>like</i> as <b>true</b> (boolean) to have my like added to the stock(s). Only 1 like per IP address should be accepted.</li>
 							<li>If I pass along 2 stocks, the return object will be an array with both stock's info but instead of <i>likes</i>, it will display <i>rel_likes</i> (the difference between the likes on both) on both.</li>
-							<li>A good way to receive the current price is the following external API (replacing 'goog' with your stock):<br> <code>https://cloud.iexapis.com/stable/stock/goog/quote/latestPrice?token=YOUR_TOKEN_HERE</code><br> (Register for free at <a href="https://iexcloud.io" target="_blank">IEX Cloud</a> to get your API Token)</li>
+							<li>A good way to receive the current price is the following external API (replace 'goog' with the stock):<br> <code>https://www.alphavantage.co/query?function=global_quote&symbol=goog&apikey=YOUR_API_KEY_HERE</code><br> (Get your free API key <a href="https://www.alphavantage.co/support/#api-key" target="_blank">here</a>)</li>
 							<li>All 5 functional tests are complete and passing.</li>
 						</ol>
 						<h3>Example usage:</h3>
@@ -83,7 +83,7 @@
 
 					<hr>
 
-					<div class="footer text-center"><a href="https://iexcloud.io" target="_blank">Data provided by IEX Cloud</a><br>by <a href="https://www.freecodecamp.org" target="_blank">freeCodeCamp</a> (ISQA5) & <a href="https://www.freecodecamp.org/adam777" target="_blank">Adam</a> | <a href="https://github.com/Adam777Z/freecodecamp-project-stock-checker" target="_blank">GitHub</a></div>
+					<div class="footer text-center"><a href="https://www.alphavantage.co/documentation/#latestprice" target="_blank">Data</a> provided by <a href="https://www.alphavantage.co" target="_blank">Alpha Vantage</a><br>by <a href="https://www.freecodecamp.org" target="_blank">freeCodeCamp</a> (ISQA5) & <a href="https://www.freecodecamp.org/adam777" target="_blank">Adam</a> | <a href="https://github.com/Adam777Z/freecodecamp-project-stock-checker" target="_blank">GitHub</a></div>
 				</div>
 			</div>
 		</div>
