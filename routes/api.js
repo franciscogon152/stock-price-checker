@@ -65,11 +65,17 @@ module.exports = function (app) {
 
 								if (stock[1] === undefined) {
 									// 1 stock
-									return res.json({ stockData: { stock: stock[0], price: Number.parseFloat(body['Global Quote']['05. price']), likes: likes } });
+									let price = typeof body['Global Quote'] !== 'undefined' && typeof body['Global Quote']['05. price'] !== 'undefined' ? body['Global Quote']['05. price'] : 0;
+									price = Number.parseFloat(price);
+
+									return res.json({ stockData: { stock: stock[0], price: price, likes: likes } });
 								} else {
 									// 2 stocks
+									let price = typeof body['Global Quote'] !== 'undefined' && typeof body['Global Quote']['05. price'] !== 'undefined' ? body['Global Quote']['05. price'] : 0;
+									price = Number.parseFloat(price);
+
 									let stock_result = [];
-									stock_result.push({ stock: stock[0], price: Number.parseFloat(body['Global Quote']['05. price']), rel_likes: likes });
+									stock_result.push({ stock: stock[0], price: price, rel_likes: likes });
 
 									stock[1] = stock[1].toUpperCase();
 
@@ -98,7 +104,10 @@ module.exports = function (app) {
 											request('https://www.alphavantage.co/query?function=global_quote&symbol=' + stock[1].toLowerCase() + '&apikey=' + process.env.STOCK_API_TOKEN, function (error, response, body2) {
 												body2 = JSON.parse(body2);
 
-												stock_result.push({ stock: stock[1], price: Number.parseFloat(body2['Global Quote']['05. price']), rel_likes: likes });
+												let price = typeof body2['Global Quote'] !== 'undefined' && typeof body2['Global Quote']['05. price'] !== 'undefined' ? body2['Global Quote']['05. price'] : 0;
+												price = Number.parseFloat(price);
+
+												stock_result.push({ stock: stock[1], price: price, rel_likes: likes });
 
 												let rel_likes1 = stock_result[0]['rel_likes'] - stock_result[1]['rel_likes'];
 												let rel_likes2 = stock_result[1]['rel_likes'] - stock_result[0]['rel_likes'];
