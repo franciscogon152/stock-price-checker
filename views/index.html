@@ -24,7 +24,7 @@
 						<ol>
 							<li>Set the content security policies to only allow loading of scripts and CSS from your server. (this was ignored to allow scripts so the forms below work)</li>
 							<li>I can <b>GET</b> <code>/api/stock-prices</code> with form data containing a Nasdaq <i>stock</i> ticker and recieve back an object <i>stockData</i>.</li>
-							<li>In <i>stockData</i>, I can see the <i>stock</i> (string, the ticker), <i>price</i> (decimal in string format), and <i>likes</i> (int).</li>
+							<li>In <i>stockData</i>, I can see the <i>stock</i> (string, the ticker), <i>price</i> (decimal), and <i>likes</i> (int).</li>
 							<li>I can also pass along field <i>like</i> as <b>true</b> (boolean) to have my like added to the stock(s). Only 1 like per IP address should be accepted.</li>
 							<li>If I pass along 2 stocks, the return object will be an array with both stock's info but instead of <i>likes</i>, it will display <i>rel_likes</i> (the difference between the likes on both) on both.</li>
 							<li>A good way to receive the current price is the following external API (replace 'goog' with the stock):<br> <code>https://www.alphavantage.co/query?function=global_quote&symbol=goog&apikey=YOUR_API_KEY_HERE</code><br> (Get your free API key <a href="https://www.alphavantage.co/support/#api-key" target="_blank">here</a>)</li>
@@ -41,8 +41,8 @@
 						</ul>
 						<h3>Example return:</h3>
 						<p>
-							<code>{"stockData":{"stock":"GOOG","price":"786.90","likes":1}}</code><br>
-							<code>{"stockData":[{"stock":"GOOG","price":"786.90","rel_likes":1},{"stock":"MSFT","price":"62.30","rel_likes":1}]}</code>
+							<code>{"stockData":{"stock":"GOOG","price":0,"likes":0}}</code><br>
+							<code>{"stockData":[{"stock":"GOOG","price":0,"rel_likes":0},{"stock":"MSFT","price":0,"rel_likes":0}]}</code>
 						</p>
 					</div>
 
