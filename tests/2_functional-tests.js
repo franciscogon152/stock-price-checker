@@ -6,7 +6,8 @@
 *       (if additional are added, keep them at the very end!)
 */
 
-var chaiHttp = require('chai-http');
+
+const { suite, test } = require('mocha');var chaiHttp = require('chai-http');
 var chai = require('chai');
 var assert = chai.assert;
 var server = require('../server');
