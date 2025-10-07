@@ -16,7 +16,10 @@ module.exports = function (app) {
       const { stock, like } = req.query;
       if (!stock) return res.json({ error: 'stock is required' });
 
-      const stocks = Array.isArray(stock) ? stock.slice(0, 2).map(s => s.toUpperCase()) : [stock.toUpperCase()];
+      const stocks = Array.isArray(stock)
+        ? stock.slice(0, 2).map(s => s.toUpperCase())
+        : [stock.toUpperCase()];
+
       const userIP = anonymizeIP(req.ip);
       const likeFlag = like === 'true';
 
@@ -29,25 +32,31 @@ module.exports = function (app) {
         const db = client.db().collection('stock');
 
         const stockData = await Promise.all(stocks.map(async (symbol) => {
+          // Paso 1: asegurar que el documento exista
+          await db.updateOne(
+            { stock: symbol },
+            { $setOnInsert: { stock: symbol, likes: [] } },
+            { upsert: true }
+          );
+
+          // Paso 2: verificar si el usuario ya dio like
           const existing = await db.findOne({ stock: symbol });
           const alreadyLiked = existing?.likes?.includes(userIP);
 
-          const update = {
-            $setOnInsert: { stock: symbol },
-            ...(likeFlag && !alreadyLiked && { $addToSet: { likes: userIP } })
-          };
+          if (likeFlag && !alreadyLiked) {
+            await db.updateOne(
+              { stock: symbol },
+              { $addToSet: { likes: userIP } }
+            );
+          }
 
-          const result = await db.findOneAndUpdate(
-            { stock: symbol },
-            update,
-            { upsert: true, returnDocument: 'after' }
-          );
-
-          const likes = Array.isArray(result.value.likes) ? result.value.likes.length : 0;
+          const updated = await db.findOne({ stock: symbol });
+          const likes = Array.isArray(updated?.likes) ? updated.likes.length : 0;
 
           const response = await fetch(`https://www.alphavantage.co/query?function=global_quote&symbol=${symbol}&apikey=${process.env.STOCK_API_TOKEN}`);
           const data = await response.json();
           console.log('Respuesta de Alpha Vantage:', data);
+
           const price = parseFloat(data['Global Quote']?.['05. price'] || 0);
 
           return { stock: symbol, price, likes };
@@ -59,8 +68,16 @@ module.exports = function (app) {
           const [s1, s2] = stockData;
           res.json({
             stockData: [
-              { stock: s1.stock, price: s1.price, rel_likes: s1.likes - s2.likes },
-              { stock: s2.stock, price: s2.price, rel_likes: s2.likes - s1.likes }
+              {
+                stock: s1.stock,
+                price: s1.price,
+                rel_likes: s1.likes - s2.likes
+              },
+              {
+                stock: s2.stock,
+                price: s2.price,
+                rel_likes: s2.likes - s1.likes
+              }
             ]
           });
         }
@@ -73,3 +90,4 @@ module.exports = function (app) {
       }
     });
 };
+
