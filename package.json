@@ -23,6 +23,7 @@
 		"helmet": "^5.1.1",
 		"mocha": "^10.0.0",
 		"mongodb": "^4.8.0",
+		"mongoose": "^8.19.1",
 		"node-fetch": "^2.7.0",
 		"request": "^2.88.2",
 		"zombie": "^6.1.4"
