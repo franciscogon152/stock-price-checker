@@ -41,6 +41,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Index page
 app.route('/')
   .get((req, res) => {
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; script-src 'self'; style-src 'self'"
+    );
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
