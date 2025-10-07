@@ -1,93 +1,75 @@
 'use strict';
 
-require('dotenv').config();
-const expect = require('chai').expect;
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
 const fetch = require('node-fetch');
-const crypto = require('crypto');
 
-function anonymizeIP(ip) {
-  return crypto.createHash('sha256').update(ip).digest('hex');
-}
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+const stockSchema = new mongoose.Schema({
+  stock: String,
+  likes: [String] // IPs que dieron like
+});
+
+const Stock = mongoose.model('Stock', stockSchema);
 
 module.exports = function (app) {
-  app.route('/api/stock-prices')
-    .get(async function (req, res) {
-      const { stock, like } = req.query;
-      if (!stock) return res.json({ error: 'stock is required' });
+  app.get('/api/stock-prices', async (req, res) => {
+    const { stock, like } = req.query;
+    const ip = req.ip;
 
-      const stocks = Array.isArray(stock)
-        ? stock.slice(0, 2).map(s => s.toUpperCase())
-        : [stock.toUpperCase()];
+    const stocks = Array.isArray(stock) ? stock : [stock];
 
-      const userIP = anonymizeIP(req.ip);
-      const likeFlag = like === 'true';
-
-      let client;
-      console.log('Query recibida:', req.query);
-      console.log('Token:', process.env.STOCK_API_TOKEN);
-
-      try {
-        client = await MongoClient.connect(process.env.MONGO_URI, { useUnifiedTopology: true });
-        const db = client.db().collection('stock');
-
-        const stockData = await Promise.all(stocks.map(async (symbol) => {
-          // Paso 1: asegurar que el documento exista
-          await db.updateOne(
-            { stock: symbol },
-            { $setOnInsert: { stock: symbol, likes: [] } },
-            { upsert: true }
-          );
-
-          // Paso 2: verificar si el usuario ya dio like
-          const existing = await db.findOne({ stock: symbol });
-          const alreadyLiked = existing?.likes?.includes(userIP);
-
-          if (likeFlag && !alreadyLiked) {
-            await db.updateOne(
-              { stock: symbol },
-              { $addToSet: { likes: userIP } }
-            );
-          }
-
-          const updated = await db.findOne({ stock: symbol });
-          const likes = Array.isArray(updated?.likes) ? updated.likes.length : 0;
-
-          const response = await fetch(`https://www.alphavantage.co/query?function=global_quote&symbol=${symbol}&apikey=${process.env.STOCK_API_TOKEN}`);
+    try {
+      const stockData = await Promise.all(
+        stocks.map(async (symbol) => {
+          const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${process.env.STOCK_API_TOKEN}`;
+          const response = await fetch(url);
           const data = await response.json();
-          console.log('Respuesta de Alpha Vantage:', data);
 
           const price = parseFloat(data['Global Quote']?.['05. price'] || 0);
 
-          return { stock: symbol, price, likes };
-        }));
+          let existing = await Stock.findOne({ stock: symbol.toUpperCase() });
 
-        if (stockData.length === 1) {
-          res.json({ stockData: stockData[0] });
-        } else {
-          const [s1, s2] = stockData;
-          res.json({
-            stockData: [
-              {
-                stock: s1.stock,
-                price: s1.price,
-                rel_likes: s1.likes - s2.likes
-              },
-              {
-                stock: s2.stock,
-                price: s2.price,
-                rel_likes: s2.likes - s1.likes
-              }
-            ]
-          });
-        }
+          if (!existing) {
+            existing = new Stock({ stock: symbol.toUpperCase(), likes: [] });
+          }
 
-      } catch (err) {
-        console.error('Database or fetch error:', err);
-        res.json({ error: 'internal error' });
-      } finally {
-        if (client) client.close();
+          if (like === 'true' && !existing.likes.includes(ip)) {
+            existing.likes.push(ip);
+            await existing.save();
+          }
+
+          const likes = existing.likes.length;
+
+          return { stock: symbol.toUpperCase(), price, likes };
+        })
+      );
+
+      if (stockData.length === 1) {
+        res.json({ stockData: stockData[0] });
+      } else {
+        const [s1, s2] = stockData;
+        res.json({
+          stockData: [
+            {
+              stock: s1.stock,
+              price: s1.price,
+              rel_likes: s1.likes - s2.likes
+            },
+            {
+              stock: s2.stock,
+              price: s2.price,
+              rel_likes: s2.likes - s1.likes
+            }
+          ]
+        });
       }
-    });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Error fetching stock data' });
+    }
+  });
 };
-

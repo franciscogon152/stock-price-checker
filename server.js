@@ -13,6 +13,20 @@ const runner = require('./test-runner');
 
 const app = express();
 
+// Seguridad: Content Security Policy
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"]
+      }
+    },
+    frameguard: { action: 'deny' }
+  })
+);
+
 // Static files
 app.use('/public', express.static(process.cwd() + '/public'));
 
@@ -22,20 +36,6 @@ app.use(cors({ origin: '*' }));
 // Body parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Security headers: Helmet con CSP explícito
-app.use(
-  helmet.contentSecurityPolicy({
-    useDefaults: true,
-    directives: {
-      "script-src": ["'self'"],
-      "style-src": ["'self'"],
-    },
-  })
-);
-
-// Desactivar frameguard si lo pide FCC
-app.use(helmet.frameguard({ action: 'deny' }));
 
 // Optional: enable if req.ip returns internal IPs
 // app.enable('trust proxy');
@@ -75,5 +75,4 @@ const listener = app.listen(process.env.PORT || 3000, () => {
   }
 });
 
-module.exports = app; // for testing
-
+module.exports = app;
