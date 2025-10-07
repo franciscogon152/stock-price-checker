@@ -1,6 +1,5 @@
 'use strict';
 
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const expect = require('chai').expect;
@@ -12,7 +11,7 @@ const apiRoutes = require('./routes/api.js');
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner');
 
-const app = express(); // ✅ Esta línea debe ir antes de usar `app`
+const app = express();
 
 // Static files
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -24,17 +23,19 @@ app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Security headers
-app.use(helmet({
-  contentSecurityPolicy: {
+// Security headers: Helmet con CSP explícito
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: true,
     directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'"]
-    }
-  },
-  frameguard: false
-}));
+      "script-src": ["'self'"],
+      "style-src": ["'self'"],
+    },
+  })
+);
+
+// Desactivar frameguard si lo pide FCC
+app.use(helmet.frameguard({ action: 'deny' }));
 
 // Optional: enable if req.ip returns internal IPs
 // app.enable('trust proxy');
@@ -49,7 +50,7 @@ app.route('/')
 fccTestingRoutes(app);
 
 // API routes
-apiRoutes(app); 
+apiRoutes(app);
 
 // 404 middleware
 app.use((req, res, next) => {
@@ -75,3 +76,4 @@ const listener = app.listen(process.env.PORT || 3000, () => {
 });
 
 module.exports = app; // for testing
+
