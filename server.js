@@ -16,11 +16,14 @@ const app = express();
 // ✅ Helmet con configuración CSP
 app.use(
   helmet.contentSecurityPolicy({
-    useDefaults: true,
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'"],
-      styleSrc: ["'self'"]
+      styleSrc: ["'self'"],
+      imgSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     }
   })
 );
