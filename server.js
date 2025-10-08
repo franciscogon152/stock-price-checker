@@ -23,7 +23,11 @@ app.use(
       imgSrc: ["'self'"],
       fontSrc: ["'self'"],
       objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"]
     }
   })
 );
