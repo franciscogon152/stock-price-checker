@@ -2,9 +2,9 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const expect = require('chai').expect;
 const cors = require('cors');
 const helmet = require('helmet');
+const expect = require('chai').expect;
 require('dotenv').config();
 
 const apiRoutes = require('./routes/api.js');
@@ -13,7 +13,14 @@ const runner = require('./test-runner');
 
 const app = express();
 
-// Seguridad: Content Security Policy
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self'; style-src 'self'"
+  );
+  next();
+});
+
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
@@ -25,20 +32,13 @@ app.use(
   })
 );
 
-// Static files
 app.use('/public', express.static(process.cwd() + '/public'));
 
-// CORS for FCC testing
 app.use(cors({ origin: '*' }));
 
-// Body parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Optional: enable if req.ip returns internal IPs
-// app.enable('trust proxy');
-
-// Index page
 app.route('/')
   .get((req, res) => {
     res.setHeader(
@@ -48,20 +48,16 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
-// FCC testing routes
 fccTestingRoutes(app);
 
-// API routes
 apiRoutes(app);
 
-// 404 middleware
 app.use((req, res, next) => {
   res.status(404)
     .type('text')
     .send('Not Found');
 });
 
-// Start server and run tests
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + listener.address().port);
   if (process.env.NODE_ENV === 'test') {
