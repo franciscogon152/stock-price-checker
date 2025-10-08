@@ -13,14 +13,7 @@ const runner = require('./test-runner');
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self'; style-src 'self'"
-  );
-  next();
-});
-
+// ✅ Helmet con configuración CSP
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
@@ -32,32 +25,36 @@ app.use(
   })
 );
 
+// ✅ Archivos estáticos
 app.use('/public', express.static(process.cwd() + '/public'));
 
+// ✅ CORS para FreeCodeCamp
 app.use(cors({ origin: '*' }));
 
+// ✅ Body parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// ✅ Página principal sin encabezado manual
 app.route('/')
   .get((req, res) => {
-    res.setHeader(
-      'Content-Security-Policy',
-      "default-src 'self'; script-src 'self'; style-src 'self'"
-    );
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
+// ✅ Rutas de testing FCC
 fccTestingRoutes(app);
 
+// ✅ Rutas de API
 apiRoutes(app);
 
+// ✅ Middleware 404
 app.use((req, res, next) => {
   res.status(404)
     .type('text')
     .send('Not Found');
 });
 
+// ✅ Inicio del servidor y ejecución de tests
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + listener.address().port);
   if (process.env.NODE_ENV === 'test') {
