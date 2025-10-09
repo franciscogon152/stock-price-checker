@@ -18,16 +18,7 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'"],
-      imgSrc: ["'self'"],
-      fontSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      connectSrc: ["'self'"],
-      frameSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      baseUri: ["'self'"],
-      formAction: ["'self'"]
+      scriptSrc: ["'self'", 'trusted-cdn.com'],
     }
   })
 );
