@@ -14,17 +14,14 @@ const runner = require('./test-runner');
 const app = express();
 
 // ✅ Helmet con configuración CSP
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"], 
-      scriptSrc: ["'self'"], 
-      styleSrc: ["'self'"],    
-      imgSrc: ["'self'"],      
-    }
-  })
-);
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'"]
+  }
+}));
 
+app.enable('trust proxy')
 // ✅ Archivos estáticos
 app.use('/public', express.static(process.cwd() + '/public'));
 
@@ -48,7 +45,7 @@ fccTestingRoutes(app);
 apiRoutes(app);
 
 // ✅ Middleware 404
-app.use((req, res, next) => {
+app.use(function(req, res, next) {
   res.status(404)
     .type('text')
     .send('Not Found');
